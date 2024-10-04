@@ -1,11 +1,12 @@
-import {useReducer} from "react";
-import reducer from "./weekReducer.js";
-import getWeek from "./date-util.js";
-import {formatDateDay} from "../utils/date-utils.js";
+import {formatDate} from "../utils/date-utils.js";
 import {FaCalendarDay, FaChevronLeft, FaChevronRight} from "react-icons/fa";
 
 // eslint-disable-next-line react/prop-types
-function WeekPicker({week,dispatch}){
+function WeekPicker({week, dispatch}) {
+    // week 객체가 존재하지 않거나 start, end 값이 없을 경우 기본값을 설정
+    const startDate = week && week.start ? formatDate(week.start) : "Invalid Date";
+    const endDate = week && week.end ? formatDate(week.end) : "Invalid Date";
+
     return (
         <div>
             <p className="date-picker">
@@ -21,11 +22,6 @@ function WeekPicker({week,dispatch}){
                            payload: e.target.value
                        })}
                 />
-                {/* 입력값을 state(상태값)으로 관리하면....
-                    이 예제에서는 날짜 타입으로 변환되는 문자열이 아니면
-                    예상치 않은 결과로 보입니다.
-                    입력값을 state 관리는 기능에 맞는 경우에만 사용합니다.
-                */}
                 <input type="text" placeholder="yyyy-mm-dd"
                        defaultValue={formatDate(new Date())}
                        onChange={(e) => dispatch({
@@ -47,17 +43,11 @@ function WeekPicker({week,dispatch}){
                 </button>
             </p>
             <p>
-                {/*{week.start.toLocaleString().substring(0,13)}
-                ~ {week.end.toLocaleString().substring(0,13)}*/}
-                {formatDate(week.start)} ~ {formatDate(week.end)}
+                {/* week 객체의 start와 end 값이 존재할 때만 출력 */}
+                {startDate} ~ {endDate}
             </p>
         </div>
-
-    )
-
+    );
 }
 
-
-
-
-export default WeekPicker
+export default WeekPicker;

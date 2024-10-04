@@ -23,7 +23,7 @@ export  default  function BookingsGrid ({week, bookable, booking, setBooking}){
                 "id": 5
             }
         ]
-    const  {grid, dates, sessopns}
+    const  {grid, dates, sessions}
             =bookable? getGrid(bookable,week.start):{}
     return (
         <table className={bookings? "bookingsGrid active":"bookingsGrid"}
