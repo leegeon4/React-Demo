@@ -1,25 +1,26 @@
-import {useEffect, useState} from "react";
-import PageSpinner from "./PageSpinner.jsx";
+import {useContext, useEffect, useState} from "react";
+import PageSpinner from "../UI/PageSpinner.jsx";
+import userContext from "./UserContext.js";
 
 function UserList(){
-    const [users, setUsers] = useState(null)
+    const [users, setUsers] = useState(null)    // 순서4) fetch 결과 상태값전장
     // fetch 중 오류  또는 로딩 중에 상태값
     const [error, setError] = useState(null)
     const [loading, setLoading] = useState(true)
-    const [userIndex, setUserIndex] = useState(0)
-    const user = users?.[userIndex] // 자바의 Optional 역할 연산자 ?.
-    //  users 가 null 이 아닐 때만 실행합니다.
+
+    // user 상태값을 UserContext에서 가져옵니다.
+    const {user, setUser} = useContext(userContext)
 
     // api 서비스 제공하는 서버로부터 데이터 가져오기
     useEffect(()=>{
         setLoading(true)
-        fetch("http://localhost:3002/users")
+        fetch("http://localhost:3001/users") // 순서1)
             .then( response =>{
                 return response.json()
             })
-            .then(data => {
+            .then(data => {                 // 순서2) users 배열이 data로 저장
                 console.log("data", data)
-                setUsers(data)
+                setUsers(data)              //순서3) 상태 users 변경
                 setLoading(false)
             })
             .catch((error) => setError(error.message))
@@ -36,20 +37,21 @@ function UserList(){
         return <PageSpinner/>
     }
 
+    // 순서 6) users, user 상태값을 가지고 UI를 만듭니다.
     return(
         <>
         {users && ( <ul className="users items-list-nav">
-                {users.map((u,i)=>(
+                {users.map((u)=>(
                     <li key={u.id}
-                        className={i=== userIndex? "selected":null}>
+                        className={u.id === user?.id ? "selected":null}>
                         <button className="btn btn-header"
-                                onClick={()=>setUserIndex(i)}>
+                                onClick={()=>setUser(u)}>
                             {u.name}
                         </button>
                     </li>
                 ))}
             </ul>)}
-            {user && (<div className="item user">
+          {/*  {user && (<div className="item user">
                 <div className="item-header">
                     <h2>{user.name}</h2>
                 </div>
@@ -57,7 +59,7 @@ function UserList(){
                     <h3>{user.title}</h3>
                     <p>{user.notes}</p>
                 </div>
-            </div>)}
+            </div>)}*/}
         </>
     )
 }
