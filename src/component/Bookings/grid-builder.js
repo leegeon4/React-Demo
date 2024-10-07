@@ -29,9 +29,9 @@ export function getGrid(bookable, startDate){
     })
     //키이름과 변수명이 같으면 생략해서 하나만 써도 됩니다.
     return { grid,  //grid: grid,
-             dates,
-             sessions: sessions
-           }
+        dates,
+        sessions: sessions
+    }
 }
 
 export function transformBookings (bookingsArray) {
@@ -61,4 +61,3 @@ const sumWithInitial = array1.reduce(
   initialValue,
 );
  */
-
