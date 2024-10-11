@@ -13,13 +13,15 @@ export default function BookablesList ({bookable, bookables,getUrl}) {
     const groups = [...new Set(bookables.map(b => b.group))];
 
     const navigate = useNavigate();
+    // url로 네비게이션을 할 수 있는 함수를 리턴한다.
 
     function changeGroup (e) {
         const bookablesInSelectedGroup = bookables.filter(
             b => b.group === e.target.value
         );
         // setBookable(bookablesInSelectedGroup[0]);
-        navigate(getUrl(bookablesInSelectedGroup[0].id));
+       // navigate(getUrl(bookablesInSelectedGroup[0].id));
+        navigate(`/bookables/${bookablesInSelectedGroup[0].id}`);
         // 단순히 상태값을 바꾸는 것이 아니고 새로운 url 로 요청을 보낸다.
     }
 

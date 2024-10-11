@@ -2,13 +2,18 @@ import { useContext, useEffect } from "react";
 import Spinner from "../UI/Spinner.jsx";
 import UserContext from "./UserContext.js";
 import useFetch from "../utils/useFetch.js";
+import {useQuery} from "react-query";
+import loadData from "../utils/api.js";
 
 export default function UserPicker() {
     // UserContext에서 user와 setUser 가져오기
     const { user, setUser } = useContext(UserContext);
 
-    // fetch 훅을 이용해 users 데이터 가져오기
-    const { data: users = [], status } = useFetch("http://localhost:3001/users");
+    const {data:users =[],status,error} = useQuery(
+        "users",
+        () => loadData("http://localhost:3001/users")
+    );
+
 
     // users 데이터가 존재할 때만 setUser를 호출하도록 조건 추가
     useEffect(() => {

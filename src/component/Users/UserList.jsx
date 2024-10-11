@@ -2,14 +2,17 @@ import {useContext, useEffect, useState} from "react";
 import PageSpinner from "../UI/PageSpinner.jsx";
 import userContext from "./UserContext.js";
 import useFetch from "../utils/useFetch.js";
+import {useQuery} from "react-query";
+import loadData from "../utils/api.js";
 
 function UserList(){
     const {user, setUser} = useContext(userContext)
 //"http://localhost:3001/users"
 
-    const {data:users =[],status,error} = useFetch(
-        "http://localhost:3001/users"
-    )
+    const {data:users =[],status,error} = useQuery(
+        "users",
+        () => loadData("http://localhost:3001/users")
+    );
 
     useEffect(() => {
         setUser(users[0])
