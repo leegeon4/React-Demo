@@ -1,8 +1,5 @@
-import { useEffect, useState} from "react";
 import {FaArrowRight} from "react-icons/fa";
 import Spinner from "../UI/Spinner.jsx";
-import loadData from "../utils/api.js";
-import useFetch from "../utils/useFetch.js";
 import { Link, useNavigate } from "react-router-dom";
 
 // bookables 는 전체 목록, bookable 은 목록 중에 선택한 하나의 객체를 컴포넌트 프롭으로 받음.
@@ -12,15 +9,15 @@ export default function BookablesList ({bookable, bookables,getUrl}) {
     const bookablesInGroup = bookables.filter(b => b.group === group);
     const groups = [...new Set(bookables.map(b => b.group))];
 
-    const navigate = useNavigate();
     // url로 네비게이션을 할 수 있는 함수를 리턴한다.
+    const navigate = useNavigate();
 
     function changeGroup (e) {
         const bookablesInSelectedGroup = bookables.filter(
             b => b.group === e.target.value
         );
         // setBookable(bookablesInSelectedGroup[0]);
-       // navigate(getUrl(bookablesInSelectedGroup[0].id));
+        // navigate(getUrl(bookablesInSelectedGroup[0].id));
         navigate(`/bookables/${bookablesInSelectedGroup[0].id}`);
         // 단순히 상태값을 바꾸는 것이 아니고 새로운 url 로 요청을 보낸다.
     }
@@ -31,14 +28,6 @@ export default function BookablesList ({bookable, bookables,getUrl}) {
         const nextBookable = bookablesInGroup[nextIndex];
         // setBookable(nextBookable);
         navigate(getUrl(nextBookable.id));
-    }
-
-    if (status === "error") {
-        return <p>{error.message}</p>
-    }
-
-    if (status === "loading") {
-        return <p><Spinner/> Loading bookables...</p>
     }
 
     return (

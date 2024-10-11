@@ -26,11 +26,11 @@ export default function BookableDetails ({bookable}) {
             />
             Show Details
           </label>
-                    {/* 글수정 버튼*/}
+                    {/*글 수정 화면 전환 링크*/}
                     <Link to={`/bookables/${bookable.id}/edit`}
-                        className="btn btn-header">
-                        <FaEdit/><span>Edit</span>
-                    </Link>
+                          className="btn btn-header">
+              <FaEdit/><span>Edit</span>
+          </Link>
 
         </span>
             </div>

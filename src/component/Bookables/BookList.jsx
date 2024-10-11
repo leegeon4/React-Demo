@@ -1,3 +1,4 @@
+/*
 import {bookables,days,sessions} from "../../static.json"
 import {useReducer} from "react";
 import {FaArrowRight} from "react-icons/fa";
@@ -72,7 +73,7 @@ function BookList(){
                 </p>
             </div>
 
-            {/* 새로운 UI 추가  : 상세 내용*/}
+            {/!* 새로운 UI 추가  : 상세 내용*!/}
             <div className="book-details">
                 <div className="item">
                     <div className="item-header">
@@ -108,4 +109,4 @@ function BookList(){
     )
 }
 
-export default BookList
+export default BookList*/

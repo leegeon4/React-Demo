@@ -1,3 +1,4 @@
+/*
 export default function getWeek(forDate, daysOffset=0){
     
     // 다음 주, 이전 주 offset으로 날짜 변경
@@ -19,7 +20,7 @@ function  addDays(forDate, offset){
     return date;
 }
 
-/* 위 함수 테스트 입니다.*/
+/!* 위 함수 테스트 입니다.*!/
 let result= getWeek(new Date())
 console.log("오늘 result: ", result)
 
@@ -30,4 +31,4 @@ result = getWeek(new Date(), -7)
 console.log("일주일 전 result: ", result)
 
 result = getWeek(new Date('2024-11-06'))
-console.log("지정한 날짜 result: " ,result)
+console.log("지정한 날짜 result: " ,result)*/
