@@ -3,7 +3,7 @@ import UserContext from "./UserContext.js";
 
 export default function UserDetails () {
 
-    //console.log("--UserDetails--",user)
+    // console.log("--UserDetails--",user)
     const {user} = useContext(UserContext)
 
     return user ? (
@@ -11,7 +11,10 @@ export default function UserDetails () {
             <div className="item-header">
                 <h2>{user.name}</h2>
             </div>
-
+            <div className="user-avatar">
+                <img src={`http://localhost:5173/img/${user.img}`}
+                     alt={user.name}/>
+            </div>
             <div className="user-details">
                 <h3>{user.title}</h3>
                 <p>{user.notes}</p>

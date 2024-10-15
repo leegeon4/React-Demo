@@ -1,53 +1,57 @@
-import { useContext, useEffect } from "react";
+import {useContext, useEffect, useState} from "react";
 import Spinner from "../UI/Spinner.jsx";
 import UserContext from "./UserContext.js";
 import useFetch from "../utils/useFetch.js";
 import {useQuery} from "react-query";
 import loadData from "../utils/api.js";
 
-export default function UserPicker() {
-    // UserContext에서 user와 setUser 가져오기
-    const { user, setUser } = useContext(UserContext);
+export default function UserPicker(){
+    // const [user, setUser] = useState(null)
+    //        ㄴ ->UserContext 를 통해서 관리하는 것으로 변경.
+    // user 상태값을 가져오기 위해 useContext 훅을 사용해야 합니다.
+    const {user, setUser} = useContext(UserContext)
+    // "http://localhost:3001/users"  , setUser(data[0])   //순서1) 초기값 0번으로 설정
 
-    const {data:users =[],status,error} = useQuery(
+    const {data:users=[],status,error} = useQuery(
         "users",
-        () => loadData("http://localhost:3001/users")
-    );
+        ()=> loadData("http://localhost:3001/users")
+    )
+    console.log('status',status)
 
-
-    // users 데이터가 존재할 때만 setUser를 호출하도록 조건 추가
     useEffect(() => {
-        if (users && users.length > 0) { // null 체크 후 length 접근
-            setUser(users[0]); // users 배열의 첫 번째 사용자로 초기 설정
-        }
-    }, [users, setUser]);
+        setUser(users[0])
+    }, []);
 
-    if (status === "loading") {
-        return <Spinner />;
+    if(status === "loading"){
+        return <Spinner/>
     }
 
-    if (!users || users.length === 0) {
-        return <p>No users available</p>; // users가 없는 경우 처리
+
+    function handleSelect(e){
+        //문자열
+        const selectedId = e.target.value
+        //u.id 는 정수
+        const selectedUser = users.find(u=> u.id === parseInt(selectedId,10))
+        //선택된 객체를 users 에서 가져오기
+        console.log('-Picker select-', selectedUser)
+        // setUser(users[selectedId-1])
+        setUser(selectedUser)
     }
 
-    function handleSelect(e) {
-        const selectedId = e.target.value;
-        const selectedUser = users.find((u) => u.id === parseInt(selectedId, 10)); // 선택된 유저 찾기
-        console.log('-Picker select-', selectedUser);
-        setUser(selectedUser);
+    if (users === null){
+        return <Spinner/>
     }
 
     return (
+        /*순서2) value 가 users 배열 0번 객체로 설정
+        *    선택을 바꾸는 이벤트는 handleSelect 처리
+        * */
         <select
             className="user-picker"
-            onChange={handleSelect}
-            value={user?.id || ""} // user가 없을 경우 빈 값 설정
-        >
-            {users.map((u) => (
-                <option key={u.id} value={u.id}>
-                    {u.name}
-                </option>
-            ))}
+            onChange={handleSelect} value={user?.id}>
+            {users.map(u =>
+                <option key={u.id} value={u.id}>{u.name}</option>
+            )}
         </select>
     );
 }

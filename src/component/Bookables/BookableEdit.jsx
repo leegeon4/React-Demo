@@ -1,6 +1,6 @@
-import {useParams} from "react-router-dom";
-import {useQuery, useQueryClient} from "react-query";
-import loadData from "../utils/api.js";
+import {useNavigate, useParams} from "react-router-dom";
+import {useMutation, useQuery, useQueryClient} from "react-query";
+import loadData, {editItem,deleteItem} from "../utils/api.js";
 import {useEffect, useState} from "react";
 import BookableForm from "./BookableForm.jsx";
 import PageSpinner from "../UI/PageSpinner.jsx";
@@ -22,14 +22,15 @@ export default function BookableEdit(){
         }  // initialData 는 설정 옵션: 캐시 만료, 데이터 읽기 지연(오류) 문제를 해결하는 초기값
         //  fetch 문제. "bookables" 이름의 캐쉬값을 가져와서 id 와 같은 것으로 data 에 저장
     )
-
-
+    // 훅은 top 위치에서 선언하기 !!
+    const navigate = useNavigate()
     const [state, setState] = useState()
     useEffect(() => {
         if(data) {
             setState(data)
         }
     }, [data]);
+    const {deleteBookable, isDeleteError,deleteError } = useDeleteBookable()
 
     if(isLoading){
         return <PageSpinner/>
@@ -37,20 +38,71 @@ export default function BookableEdit(){
 
     console.log("--BookableEdit data",data)
 
-    function handleSubmit() {
-
+    // url 변경하는 네비게이트 함수를 리턴받는다.
+    function handleSubmit(){
+        const result = editItem(`http://localhost:3001/bookables/${id}`,state)
+        navigate(`/bookables/${id}`)
     }
 
-    function handleDelete() {
+    //status 는 변수명 중복 되어서 사용 안함 또는 대체 해야 함.
 
+    function handleDelete(){
+        // const result =deleteItem(`http://localhost:3001/bookables/${id}`)
+        // navigate(`/bookables`)
+        // 삭제 후 삭제된 bookable 의 그룹 첫번째 값으로 이동해 보세요. -> useMutation 사용해야함.
+        deleteBookable(state)
     }
-
 
     //state 는 화면에 보여질 값들을 저장.
     return (
         status==="success" &&
         <BookableForm
-            formState={{state, handleSubmit, handleDelete}}
+            formState={{state,setState}}
+            handleSubmit={handleSubmit}
+            handleDelete={handleDelete}
         />
     )
+}
+// 삭제 처리 커스텀 훅
+function useDeleteBookable () {
+    const navigate = useNavigate();
+    const queryClient = useQueryClient();
+    const mutation = useMutation(
+        bookable => deleteItem(`http://localhost:3001/bookables/${bookable.id}`),
+        {
+            // onSuccess : 첫번째 인자는 서버에서 보낸 응답. 두번째 인자는 실행함수로 보낸 데이터
+            onSuccess: (response, bookable) => {
+                // 현재 cache 에서 key 이름 "bookables" 가 있으면 삭제한 항목을 목록에서 제거하기
+                // 현재 cache 에서 key 이름 "bookables" 가져오기
+                // 낙관적 업데이트 : DELETE 요청을 성공했으니 캐시를 바로 업데이트 합니다.
+                const bookables = queryClient.getQueryData("bookables") || [];
+                console.log("useDeleteBookable bookable",bookable)
+                // 삭제한 bookable 만 제외 filter 하여 bookables 업데이트
+                queryClient.setQueryData(
+                    "bookables",
+                    bookables.filter(b => b.id !== bookable.id)
+                );
+                // 삭제된 bookable 그룹의 첫번째 항목으로 url 바꾸기
+                navigate(`/bookables/${getIdForFirstInGroup(bookables, bookable) || ""}`);
+            }
+        }
+    );
+    // 리턴 받은 mutation 객체 중 필요한 값만 모아서 객체 생성하여 리턴
+    return {
+        deleteBookable: mutation.mutate,
+        status:mutation.status,
+        isDeleteError: mutation.isError,
+        deleteError: mutation.error
+    };
+}
+
+function getIdForFirstInGroup (bookables, excludedBookable) {
+    // 삭제된 excludedBookable 의 id, group 저장
+    const {id, group} = excludedBookable;
+
+    // bookables 에서 삭제된 group 과 같은 첫번째 id 찾기
+    const bookableInGroup = bookables.find(b => b.group === group && b.id !== id);
+
+    // id 리턴
+    return bookableInGroup?.id;
 }
